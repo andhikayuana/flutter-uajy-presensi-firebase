@@ -1,3 +1,4 @@
+import 'package:flutter_presensi_uajy/src/data/model/location.dart';
 import 'package:geocoder/geocoder.dart';
 import 'package:geolocator/geolocator.dart';
 
@@ -49,9 +50,9 @@ class LocationService {
     return addresses.first;
   }
 
-  Future<Address> getCurrentLocation() async {
+  Future<Location> getCurrentLocation() async {
     final position = await getCurrentPosition();
     final address = await getLocationByPosition(position);
-    return address;
+    return Location(position, address);
   }
 }

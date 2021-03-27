@@ -46,6 +46,11 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               ProfileScreen(
                 profile: profile,
+                onUpdatedProfile: () {
+                  setState(() {
+                    _getProfile = dbService.getProfile(authService.user.uid);
+                  });
+                },
               ),
             ];
 

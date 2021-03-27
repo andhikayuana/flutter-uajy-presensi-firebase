@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_presensi_uajy/src/data/model/log_activity.dart';
 import 'package:flutter_presensi_uajy/src/data/model/profile.dart';
+import 'package:flutter_presensi_uajy/src/data/remote/database_service.dart';
 import 'package:flutter_presensi_uajy/src/widget/app_bar_home.dart';
 
 class HistoryScreen extends StatefulWidget {
@@ -15,6 +17,16 @@ class HistoryScreen extends StatefulWidget {
 }
 
 class _HistoryScreenState extends State<HistoryScreen> {
+  final DatabaseService _databaseService = DatabaseService();
+
+  Future<List<LogActivity>> _getLogActivities;
+
+  @override
+  void initState() {
+    super.initState();
+    _getLogActivities = _databaseService.getLogActivities();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -25,8 +37,13 @@ class _HistoryScreenState extends State<HistoryScreen> {
           subtitle: widget.profile.nim,
         ),
         Container(
-          child: Center(
-            child: Text("hai"),
+          child: FutureBuilder(
+            future: _getLogActivities,
+            builder: (context, snapshot) {
+              print(snapshot.data);
+
+              return Text("Hello");
+            },
           ),
         ),
       ],

@@ -1,6 +1,9 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
+import 'package:flutter_presensi_uajy/src/data/model/location.dart';
+import 'package:flutter_presensi_uajy/src/data/model/log_activity.dart';
 import 'package:flutter_presensi_uajy/src/data/model/profile.dart';
+import 'package:flutter_presensi_uajy/src/data/remote/database_service.dart';
 import 'package:flutter_presensi_uajy/src/data/remote/location_service.dart';
 import 'package:flutter_presensi_uajy/src/widget/app_bar_home.dart';
 import 'package:flutter_presensi_uajy/src/widget/dashboard_date_time.dart';
@@ -23,11 +26,13 @@ class DashboardScreen extends StatefulWidget {
 
 class _DashboardScreenState extends State<DashboardScreen> {
   LocationService _locationService = LocationService();
-  Future<Address> _getCurrentAddress;
+  Future<Location> _getCurrentAddress;
+  DatabaseService _databaseService = DatabaseService();
 
   Timer _timer;
   String _formattedDate;
   String _formattedTime;
+  Location _location;
 
   @override
   void initState() {
@@ -81,9 +86,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: ElevatedButton.styleFrom(
                       primary: Colors.purpleAccent,
                     ),
-                    onPressed: () {
-                      //todo
-                    },
+                    onPressed: onPressedClockIn,
                     child: Row(
                       children: [
                         Expanded(
@@ -113,9 +116,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     style: ElevatedButton.styleFrom(
                       primary: Colors.purpleAccent,
                     ),
-                    onPressed: () {
-                      //todo
-                    },
+                    onPressed: onPressedClockOut,
                     child: Row(
                       children: [
                         Expanded(
@@ -156,6 +157,34 @@ class _DashboardScreenState extends State<DashboardScreen> {
     );
   }
 
+  Future<void> onPressedClockIn() async {
+    final position = _location.position;
+    await _databaseService.insertLogActivity(
+      LogActivity(
+        location: {
+          "lat": position.latitude,
+          "lng": position.longitude,
+        },
+        loged_at: DateTime.now(),
+        type: "clock_in",
+      ),
+    );
+  }
+
+  Future<void> onPressedClockOut() async {
+    final position = _location.position;
+    await _databaseService.insertLogActivity(
+      LogActivity(
+        location: {
+          "lat": position.latitude,
+          "lng": position.longitude,
+        },
+        loged_at: DateTime.now(),
+        type: "clock_out",
+      ),
+    );
+  }
+
   Positioned buildCardDashboard() {
     return Positioned(
       top: 130,
@@ -180,7 +209,9 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     builder: (context, snapshot) {
                       String text = "Loading...";
                       if (snapshot.hasData) {
-                        final address = snapshot.data as Address;
+                        final location = snapshot.data as Location;
+                        _location = location;
+                        final address = location.address;
                         text = address.addressLine;
                       } else if (snapshot.hasError) {
                         text = "Error...";
