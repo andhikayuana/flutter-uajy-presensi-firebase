@@ -1,7 +1,9 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_presensi_uajy/src/screen/asset/asset_screen.dart';
 import 'package:flutter_presensi_uajy/src/screen/home/home_screen.dart';
 import 'package:flutter_presensi_uajy/src/screen/splash/splash_screen.dart';
+import 'dart:io' show Platform;
 
 class App extends StatelessWidget {
   final Future<FirebaseApp> _initialization = Firebase.initializeApp();
@@ -27,6 +29,7 @@ class App extends StatelessWidget {
           }
           if (snapshot.connectionState == ConnectionState.done) {
             return SplashScreen();
+            // return AssetScreen();
           }
 
           return Container(

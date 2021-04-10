@@ -3,6 +3,7 @@ import 'package:flutter_presensi_uajy/src/data/model/log_activity.dart';
 import 'package:flutter_presensi_uajy/src/data/model/profile.dart';
 import 'package:flutter_presensi_uajy/src/data/remote/database_service.dart';
 import 'package:flutter_presensi_uajy/src/widget/app_bar_home.dart';
+import 'package:flutter_presensi_uajy/src/widget/card_history.dart';
 
 class HistoryScreen extends StatefulWidget {
   HistoryScreen({
@@ -36,14 +37,29 @@ class _HistoryScreenState extends State<HistoryScreen> {
           title: widget.profile.name,
           subtitle: widget.profile.nim,
         ),
-        Container(
-          child: FutureBuilder(
-            future: _getLogActivities,
-            builder: (context, snapshot) {
-              print(snapshot.data);
+        Expanded(
+          child: Container(
+            child: FutureBuilder(
+              future: _getLogActivities,
+              builder: (context, snapshot) {
+                if (snapshot.hasData) {
+                  final data = snapshot.data as List<LogActivity>;
 
-              return Text("Hello");
-            },
+                  return ListView.builder(
+                    itemCount: data.length,
+                    itemBuilder: (context, index) {
+                      return CardHistory(log: data[index]);
+                    },
+                  );
+                } else if (snapshot.hasError) {
+                  return Center(
+                    child: Text("Error..."),
+                  );
+                }
+
+                return Center(child: CircularProgressIndicator());
+              },
+            ),
           ),
         ),
       ],

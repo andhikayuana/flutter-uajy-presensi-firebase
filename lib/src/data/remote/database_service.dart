@@ -60,6 +60,7 @@ class DatabaseService {
           .collection("log_activities")
           .doc(uid)
           .collection("logs")
+          .orderBy("loged_at", descending: true)
           .get()
           .then((QuerySnapshot querySnapshot) {
         querySnapshot.docs.forEach((doc) {
